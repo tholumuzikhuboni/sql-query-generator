@@ -61,14 +61,6 @@ Ensure you have the following:
 - **Font Awesome**: Used for adding icons to enhance the user interface.
 - **Chart.js**: A JavaScript library used for creating dynamic and interactive charts and visualizations.
 
-## File Structure 
-
-sql-query-generator/
-├── index.html        # Main HTML homepage file 
-├── generator/        # Directory the file for the generator tool
-├── Licence/          # File   Open source MIT licence 
-└── README.md         # Project documentation
-
 ## Contributing
 
 We welcome contributions to improve the SQL Query Generator! If you'd like to contribute, please follow these steps:
