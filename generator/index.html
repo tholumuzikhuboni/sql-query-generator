@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQL Query Generator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #282828;
+      color: white;
+      font-family: Consolas, monospace;
+    }
+    
+    /* Preloader Styles */
+    #preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #1e1e1e;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 30px;
+      background-color: #ffcc00;
+      border-radius: 10px;
+    }
+
+    .loading-text {
+      margin-top: 10px;
+      color: #ffcc00;
+      font-size: 1.2rem;
+    }
+
+    .container {
+      padding-top: 30px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      color: #ffcc00;
+      font-weight: bold;
+    }
+
+    .header p {
+      color: #aaaaaa;
+    }
+
+    .terminal {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    }
+
+    .form-label {
+      color: #66ff66;
+    }
+
+    select, input, button {
+      background-color: #333333;
+      color: #66ff66;
+      border: 1px solid #666666;
+      border-radius: 5px;
+      font-family: Consolas, monospace;
+      font-size: 16px;
+    }
+
+    select:focus, input:focus, button:focus {
+      outline: none;
+      border-color: #ffcc00;
+      box-shadow: 0 0 8px #ffcc00;
+    }
+
+    .btn-generate {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: #444444;
+      color: #ffcc00;
+      border: 1px solid #666666;
+    }
+
+    .btn-generate:hover {
+      background-color: #ffcc00;
+      color: #282828;
+    }
+
+    .query-box {
+      background-color: #1e1e1e;
+      color: #cccccc;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      border: 1px solid #666666;
+      font-family: Consolas, monospace;
+    }
+
+    .query-box pre {
+      color: #66ff66;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .info-section {
+      background-color: #1e1e1e;
+      color: #cccccc;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    }
+    
+    ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    ul li i {
+      margin-right: 1px;
+      }
+
+    .footer {
+      text-align: center;
+      color: #aaaaaa;
+      font-size: 0.9rem;
+      margin-top: 30px;
+    }
+
+    .footer a {
+      color: #ffcc00;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .navbar {
+      background-color: #333333;
+    }
+
+    .navbar-brand {
+      color: #ffcc00;
+      font-weight: bold;
+    }
+
+    .navbar-nav .nav-link {
+      color: #66ff66;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #ffcc00;
+    }
+  </style>
+</head>
+<body>
+  
+<!-- Preloader -->
+<div id="preloader">
+  <div style="width: 80%; max-width: 400px; text-align: center;">
+    <div class="progress" style="height: 30px; background-color: #333333;">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <p class="loading-text" id="loading-text">Loading... 0%</p>
+  </div>
+</div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">SQL Query Generator</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" href="#home"><i class="fas fa-home"></i> Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#how-to-use"><i class="fas fa-question-circle"></i> How to Use</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#about"><i class="fas fa-info-circle"></i> About</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header" id="home">
+    <h1>SQL Query Generator</h1>
+    <p>Generate SQL queries effortlessly in a terminal-inspired interface.</p>
+  </div>
+
+  <!-- Terminal -->
+  <div class="terminal">
+    <form id="query-form">
+      <!-- Select Table -->
+      <div class="mb-3">
+        <label for="table-select" class="form-label"><i class="fas fa-table"></i> Select Table:</label>
+        <select id="table-select" class="form-select">
+          <option value="users">Users</option>
+          <option value="orders">Orders</option>
+          <option value="products">Products</option>
+        </select>
+      </div>
+
+      <!-- Select Columns -->
+      <div class="mb-3">
+        <label for="column-select" class="form-label"><i class="fas fa-columns"></i> Select Columns (Ctrl/Cmd+Click for Multiple):</label>
+        <select id="column-select" class="form-select" multiple>
+          <option value="id">ID</option>
+          <option value="name">Name</option>
+          <option value="email">Email</option>
+        </select>
+      </div>
+
+      <!-- WHERE Clause -->
+      <div class="mb-3">
+        <label for="filter-condition" class="form-label"><i class="fas fa-filter"></i> Filter (WHERE Clause):</label>
+        <input type="text" id="filter-condition" class="form-control" placeholder="e.g., age > 30">
+      </div>
+
+      <!-- ORDER BY Clause -->
+      <div class="mb-3">
+        <label for="sort-by" class="form-label"><i class="fas fa-sort"></i> Sort (ORDER BY Clause):</label>
+        <input type="text" id="sort-by" class="form-control" placeholder="e.g., name ASC">
+      </div>
+
+      <!-- LIMIT -->
+      <div class="mb-3">
+        <label for="limit" class="form-label"><i class="fas fa-cogs"></i> Limit (LIMIT Clause):</label>
+        <input type="number" id="limit" class="form-control" placeholder="e.g., 10">
+      </div>
+
+      <!-- Generate Button -->
+      <button type="button" id="generate-btn" class="btn btn-generate w-100"><i class="fas fa-play"></i> Generate SQL Query</button>
+    </form>
+
+    <!-- Generated Query -->
+    <div class="query-box" id="query-output">
+      <pre id="query-result">Your SQL query will appear here...</pre>
+    </div>
+  </div>
+  
+    <!-- Dynamic Charts -->
+<div class="info-section">
+  <h2><i class="fas fa-chart-bar"></i> Dynamic Chart</h2>
+  <canvas id="dynamicChart" style="margin: 20px 0;"></canvas>
+</div>
+
+  <!-- How to Use Section -->
+  <div class="info-section" id="how-to-use">
+    <h2><i class="fas fa-question-circle"></i> How to Use</h2>
+    <p>To generate a SQL query:</p>
+    <ul>
+      <li><i class="fas fa-check-circle"></i> Select the table from the dropdown.</li>
+      <li><i class="fas fa-check-circle"></i> Choose the columns you want to query by selecting them (Ctrl/Cmd+Click for multiple columns).</li>
+      <li><i class="fas fa-check-circle"></i> Add filter conditions, if needed, for the WHERE clause (e.g., <code>age &gt; 30</code>).</li>
+      <li><i class="fas fa-check-circle"></i> Optionally, define sorting order (e.g., <code>name ASC</code>) for the ORDER BY clause.</li>
+      <li><i class="fas fa-check-circle"></i> Optionally, set a limit on the number of records.</li>
+      <li><i class="fas fa-check-circle"></i> Press the <strong>Generate SQL Query</strong> button to see the generated query in the output box.</li>
+    </ul>
+  </div>
+
+  <!-- About Section -->
+  <div class="info-section" id="about">
+    <h2><i class="fas fa-info-circle"></i> About the Tool</h2>
+    <p>The SQL Query Generator is a simple and intuitive web-based tool to help developers quickly generate SQL queries for databases. It is designed to replicate a terminal-style interface to provide a familiar and easy-to-use environment for creating SQL queries.</p>
+    <p>This tool supports basic SQL clauses such as SELECT, WHERE, ORDER BY, and LIMIT, making it perfect for beginners and advanced users alike.</p>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <p>&copy; 2024 SQL Query Generator | Developed by <a href="https://www.tholumuzi.co.za" target="_blank">Tholumuzi Khuboni</a></p>
+</div>
+
+<script>
+
+  // Preloader logic
+  let progress = 0;
+  const progressBar = document.getElementById('progress-bar');
+  const loadingText = document.getElementById('loading-text');
+  const preloader = document.getElementById('preloader');
+  const container = document.querySelector('.container');
+
+  // Simulate loading
+  function simulateLoading() {
+    const interval = setInterval(() => {
+      if (progress < 100) {
+        progress += 1;
+        progressBar.style.width = `${progress}%`;
+        loadingText.textContent = `Loading... ${progress}%`;
+      } else {
+        clearInterval(interval);
+        preloader.style.display = 'none';
+        container.style.visibility = 'visible'; // Show content
+      }
+    }, 50); // Adjust speed by changing interval time
+  }
+
+  // Call the loading simulation
+  simulateLoading();
+  // Generate SQL Query
+  document.getElementById('generate-btn').addEventListener('click', () => {
+    const table = document.getElementById('table-select').value;
+    const columns = Array.from(document.getElementById('column-select').selectedOptions).map(opt => opt.value).join(', ') || '*';
+    const filter = document.getElementById('filter-condition').value;
+    const sortBy = document.getElementById('sort-by').value;
+    const limit = document.getElementById('limit').value;
+
+    let query = `SELECT ${columns} FROM ${table}`;
+    if (filter) query += ` WHERE ${filter}`;
+    if (sortBy) query += ` ORDER BY ${sortBy}`;
+    if (limit) query += ` LIMIT ${limit}`;
+
+    document.getElementById('query-result').innerText = query + ';';
+  });
+</script>
+
+<script>
+  // Initialize Chart.js
+  const ctx = document.getElementById('dynamicChart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'bar', // Change to 'line', 'pie', etc. for different types
+    data: {
+      labels: ['Users', 'Products', 'Orders'], // Placeholder labels
+      datasets: [{
+        label: 'Sample Data',
+        data: [10, 20, 15], // Placeholder data
+        backgroundColor: ['#ffcc00', '#66ff66', '#ffaa00'],
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          display: true,
+          labels: {
+            color: '#ffffff'
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#ffffff' },
+          grid: { color: '#666666' }
+        },
+        y: {
+          ticks: { color: '#ffffff' },
+          grid: { color: '#666666' }
+        }
+      }
+    }
+  });
+
+  // Update Chart Data Dynamically
+  function updateChart(labels, data) {
+    chart.data.labels = labels;
+    chart.data.datasets[0].data = data;
+    chart.update();
+  }
+
+  // Hook SQL Query Generation to Chart Update
+  document.getElementById('generate-btn').addEventListener('click', () => {
+    const table = document.getElementById('table-select').value;
+
+    // Example logic: Customize based on your actual SQL query results
+    if (table === 'users') {
+      updateChart(['Admins', 'Editors', 'Viewers'], [5, 12, 8]);
+    } else if (table === 'orders') {
+      updateChart(['Completed', 'Pending', 'Cancelled'], [20, 10, 5]);
+    } else if (table === 'products') {
+      updateChart(['Electronics', 'Clothing', 'Books'], [30, 15, 25]);
+    }
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
