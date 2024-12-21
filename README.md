@@ -14,7 +14,7 @@ A sleek and dynamic web-based SQL Query Generator designed to help developers an
 ---
 
 ## Demo
-Try the tool live: [Coming Soon](#)
+Try the tool live: [SQL Generator](https://sql-generator.tholumuzi.co.za)
 
 ---
 
